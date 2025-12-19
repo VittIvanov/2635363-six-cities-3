@@ -9,6 +9,7 @@ import FavoritesPage from './pages/FavoritesPage';
 import PrivateRoute from './components/PrivateRoute';
 
 
+const isAuthenticated = false;
 // const App: React.FC<MainPageProps> = ({ offers }) => < MainPage offers={offers} />;
 
 const App: React.FC<MainPageProps> = ({ offers }) => (
@@ -19,7 +20,7 @@ const App: React.FC<MainPageProps> = ({ offers }) => (
 
       {/* Приватный маршрут */}
       <Route path="/favorites" element={
-        <PrivateRoute>
+        <PrivateRoute isAuthenticated={isAuthenticated}>
           <FavoritesPage />
         </PrivateRoute>
       }

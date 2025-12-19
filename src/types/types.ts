@@ -11,3 +11,13 @@ export interface OfferCardProps {
   type: string;
   image: string;
 }
+
+export interface Review {
+  id: number;
+  offerId: number;
+  userName: string;
+  avatar: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
