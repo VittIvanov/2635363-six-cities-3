@@ -1,6 +1,6 @@
 import React from 'react';
 import MainPage from './pages/MainPage';
-import { MainPageProps } from '../types/types';
+import { MainPageProps, OffersFull } from '../types/types';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import NotFoundPage from './pages/NotFoundPage';
 import LoginPage from './pages/LoginPage';
@@ -8,11 +8,13 @@ import OfferPage from './pages/OfferPage';
 import FavoritesPage from './pages/FavoritesPage';
 import PrivateRoute from './components/PrivateRoute';
 
+interface AppProps {
+  offers: OffersFull[];
+}
 
 const isAuthenticated = false;
-// const App: React.FC<MainPageProps> = ({ offers }) => < MainPage offers={offers} />;
 
-const App: React.FC<MainPageProps> = ({ offers }) => (
+const App: React.FC<MainPageProps & AppProps> = ({ offers }) => (
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<MainPage offers={offers} />} />
@@ -26,7 +28,7 @@ const App: React.FC<MainPageProps> = ({ offers }) => (
       }
       />
 
-      <Route path="/offer/:id" element={<OfferPage />} />
+      <Route path="/offer/:id" element={<OfferPage offers={offers} />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   </BrowserRouter>
