@@ -5,6 +5,7 @@ import { reviews } from '../../mocks/reviews';
 import ReviewList from '../components/ReviewList';
 import Map from '../components/Map';
 import OfferCard from '../components/OfferCard';
+import { useState } from 'react';
 
 export interface OfferPageProps {
   offers: OffersFull[];
@@ -13,6 +14,8 @@ export interface OfferPageProps {
 const OfferPage: React.FC<OfferPageProps> = ({ offers }) => {
   const { id } = useParams<{ id: string }>();
   const currentOffer = offers.find((offer) => offer.id === id);
+  const [isFavorite, setIsFavorite] = useState(currentOffer?.isFavorite);
+  const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
 
   if (!id) {
     return <p>Invalid offer id</p>;
@@ -24,6 +27,10 @@ const OfferPage: React.FC<OfferPageProps> = ({ offers }) => {
 
   const nearbyOffers = offers.filter((offer) => offer.id !== currentOffer.id).slice(0, 3);
   const onMapOffers = [currentOffer, ...nearbyOffers];
+
+  const handleFavoriteClick = () => {
+    setIsFavorite(!isFavorite);
+  };
 
   return (
     <div className="page">
@@ -93,7 +100,7 @@ const OfferPage: React.FC<OfferPageProps> = ({ offers }) => {
                 <h1 className="offer__name">
                   {currentOffer.title}
                 </h1>
-                <button className="offer__bookmark-button button" type="button">
+                <button className={`offer__bookmark-button button ${isFavorite ? 'offer__bookmark-button--active' : ''}`} onClick={handleFavoriteClick} type="button">
                   <svg className="offer__bookmark-icon" width="31" height="33">
                     <use xlinkHref="#icon-bookmark"></use>
                   </svg>
@@ -170,7 +177,7 @@ const OfferPage: React.FC<OfferPageProps> = ({ offers }) => {
             </div>
           </div>
           <section className="offer__map map">
-            <Map city={currentOffer.city} offers={onMapOffers} />
+            <Map city={currentOffer.city} offers={onMapOffers} activeOfferId={activeOfferId} />
           </section>
         </section>
         <div className="container">
@@ -181,9 +188,9 @@ const OfferPage: React.FC<OfferPageProps> = ({ offers }) => {
                 <OfferCard
                   key={offer.id}
                   offer={offer}
-                  isActive={false}
-                  onOfferMouseEnter={() => { }}
-                  onOfferMouseLeave={() => { }}
+                  isActive={offer.id === activeOfferId}
+                  onOfferMouseEnter={() => setActiveOfferId(offer.id)}
+                  onOfferMouseLeave={() => setActiveOfferId(null)}
                   onFavoriteClick={() => { }}
                   className="near-places__card"
                 />
