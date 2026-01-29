@@ -9,15 +9,15 @@ type MapProps = {
 };
 
 const defaultIcon = leaflet.icon({
-  iconUrl: 'img/pin.svg',
+  iconUrl: 'https://assets.htmlacademy.ru/content/intensive/javascript-1/demo/interactive-map/pin.svg',
   iconSize: [40, 40],
   iconAnchor: [20, 40],
 });
 
 const activeIcon = leaflet.icon({
-  iconUrl: 'img/pin-active.svg',
-  iconSize: [27, 39],
-  iconAnchor: [13, 39],
+  iconUrl: 'https://assets.htmlacademy.ru/content/intensive/javascript-1/demo/interactive-map/main-pin.svg',
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
 });
 
 const Map: React.FC<MapProps> = ({ city, offers, activeOfferId }) => {
@@ -37,10 +37,10 @@ const Map: React.FC<MapProps> = ({ city, offers, activeOfferId }) => {
 
       leaflet
         .tileLayer(
-          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
           {
             attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
           }
         )
         .addTo(map);
