@@ -18,7 +18,7 @@ const isAuthenticated = true;
 const App: React.FC<AppProps> = ({ offers, onFavoriteClick }) => (
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<MainPage offers={offers} />} />
+      <Route path="/" element={<MainPage />} />
       <Route path="/login" element={<LoginPage />} />
 
       {/* Приватный маршрут */}

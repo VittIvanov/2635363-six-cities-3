@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 
-
 const FavoritesEmptyPage: React.FC = () => (
   <div className="page page--favorites-empty">
     <header className="header">

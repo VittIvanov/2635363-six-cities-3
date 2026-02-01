@@ -3,6 +3,12 @@ export interface MainPageProps {
   offers: OfferPreview[];
 }
 
+export interface AppProps {
+  offers: OffersFull[];
+  onFavoriteClick: (id: string) => void;
+}
+
+
 export interface Location {
   latitude: number;
   longitude: number;
@@ -12,6 +18,24 @@ export interface Location {
 export interface City {
   name: string;
   location: Location;
+}
+
+export interface CitiesListProps {
+  cities: string[];
+  activeCity: string;
+  onCityClick: (city: string) => void;
+}
+
+export interface LoginPageProps {
+}
+
+export interface FavoritesPageProps {
+  offers: OfferPreview[];
+  onFavoriteClick: (id: string) => void;
+}
+
+export interface OfferPageProps {
+  offers: OffersFull[];
 }
 
 export interface OfferCardProps {
@@ -54,7 +78,6 @@ export interface OffersFull extends OfferPreview {
   images: string[];
 }
 
-
 export interface Review {
   id: string;
   date: string;
@@ -66,3 +89,41 @@ export interface Review {
   comment: string;
   rating: number;
 }
+
+export type MapProps = {
+  city: City;
+  offers: OfferPreview[];
+  activeOfferId?: string | null;
+};
+
+export type OffersListProps = {
+  offers: OfferPreview[];
+  activeOfferId: string | null;
+  onFavoriteClick: (id: string) => void;
+  onActiveOfferChange: (id: string | null) => void;
+};
+
+export interface ReviewItemProps {
+  review: Review;
+}
+
+export interface ReviewListProps {
+  reviews: Review[];
+}
+
+export interface PrivateRouteProps {
+  children: JSX.Element;
+  isAuthenticated: boolean;
+}
+
+export type State = {
+  city: string;
+  offers: OfferPreview[];
+}
+
+export interface OffersState {
+  offers: OfferPreview[];
+}
+
+export type ActionType = | { type: 'SET_CITY'; payload: string }
+  | { type: 'SET_OFFERS'; payload: OfferPreview[] };
