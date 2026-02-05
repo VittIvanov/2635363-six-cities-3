@@ -1,12 +1,6 @@
 import { useEffect, useRef } from 'react';
 import leaflet from 'leaflet';
-import { City, OfferPreview } from '../../types/types';
-
-type MapProps = {
-  city: City;
-  offers: OfferPreview[];
-  activeOfferId?: string | null;
-};
+import { MapProps } from '../../types/types';
 
 const defaultIcon = leaflet.icon({
   iconUrl: 'https://assets.htmlacademy.ru/content/intensive/javascript-1/demo/interactive-map/pin.svg',

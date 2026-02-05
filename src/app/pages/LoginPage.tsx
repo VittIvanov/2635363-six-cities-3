@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom';
-
-export interface LoginPageProps {
-}
+import { LoginPageProps } from '../../types/types';
 
 const LoginPage: React.FC<LoginPageProps> = () => (
   <div className="page page--gray page--login">

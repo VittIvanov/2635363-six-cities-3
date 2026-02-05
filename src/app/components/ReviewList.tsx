@@ -1,10 +1,6 @@
-import { Review } from '../../types/types';
+import { ReviewListProps } from '../../types/types';
 import ReviewItem from './ReviewItem';
 import ReviewForm from './ReviewForm';
-
-interface ReviewListProps {
-  reviews: Review[];
-}
 
 const ReviewList: React.FC<ReviewListProps> = ({ reviews }) => (
   <section className="offer__reviews reviews">

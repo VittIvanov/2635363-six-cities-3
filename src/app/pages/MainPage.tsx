@@ -1,37 +1,53 @@
 import { CITIES } from '../../mocks/offers';
+import { CITIES_DATA } from '../../mocks/offers';
 import { Link } from 'react-router-dom';
-import { MainPageProps } from '../../types/types';
 import OffersList from '../components/OffersList';
 import { useState } from 'react';
-import { OfferPreview } from '../../types/types';
 import Map from '../components/Map';
-import { CITIES_DATA } from '../../mocks/offers';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/index';
+import { changeCity } from '../../store/actions';
+import CitiesList from '../components/CitiesList';
+import { toggleFavorite } from '../../store/offersSlice';
+import SortingOptions from '../components/SortingOptions';
+import { SortType } from '../../types/types';
 
 
-const MainPage: React.FC<MainPageProps> = ({ offers }) => {
-  const [activeCity, setActiveCity] = useState('Paris');
-  const [offersState, setOffersState] = useState<OfferPreview[]>(offers);
+const MainPage: React.FC = () => {
+  const city = useSelector((state: RootState) => state.city.city);
+  const offers = useSelector((state: RootState) => state.offers.offers);
+  const dispatch = useDispatch();
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
-  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [sortType, setSortType] = useState<SortType>('Popular');
 
-  const filteredOffers = offersState.filter(
-    (offer) => offer.city?.name === activeCity
+  const filteredOffers = offers.filter(
+    (offer) => offer.city?.name === city
   );
+  const sortedOffers = [...filteredOffers].sort((a, b) => {
+    switch (sortType) {
+      case 'PriceLowToHigh':
+        return a.price - b.price;
+      case 'PriceHighToLow':
+        return b.price - a.price;
+      case 'TopRated':
+        return b.rating - a.rating;
+      default:
+        return 0;
+    }
+  });
 
-  const favoritesCount = offersState.filter(
+  const onCityClick = (cityName: string) => {
+    dispatch(changeCity(cityName));
+  };
+
+  const favoritesCount = offers.filter(
     (offer) => offer.isFavorite
   ).length;
 
-  const cityData = CITIES_DATA[activeCity];
+  const cityData = CITIES_DATA[city];
 
   const onFavoriteClick = (id: string) => {
-    setOffersState((prev) =>
-      prev.map((offer) =>
-        offer.id === id
-          ? { ...offer, isFavorite: !offer.isFavorite }
-          : offer
-      )
-    );
+    dispatch(toggleFavorite(id));
   };
 
   return (
@@ -69,56 +85,28 @@ const MainPage: React.FC<MainPageProps> = ({ offers }) => {
         <h1 className="visually-hidden">Cities</h1>
         <div className="tabs">
           <section className="locations container">
-            <ul className="locations__list tabs__list">
-              {CITIES.map((city) => (
-                <li className="locations__item" key={city}>
-                  <Link
-                    to="#"
-                    className={`locations__item-link tabs__item ${city === activeCity ? 'tabs__item--active' : ''}`}
-                    onClick={(e) => {
-                      e.preventDefault(); // чтобы не перезагружалась страница
-                      setActiveCity(city); // обновляем выбранный город
-                    }}
-                  >
-                    <span>{city}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+
+            <CitiesList cities={CITIES} activeCity={city} onCityClick={onCityClick} />
+
           </section>
         </div>
         <div className="cities">
           <div className="cities__places-container container">
             <section className="cities__places places">
               <h2 className="visually-hidden">Places</h2>
-              <b className="places__found">{filteredOffers.length} places to stay in {activeCity}</b>
-              <form className="places__sorting" action="#" method="get">
-                <span className="places__sorting-caption">Sort by</span>
-                <span
-                  className="places__sorting-type"
-                  tabIndex={0}
-                  onClick={() => setIsSortOpen((prev) => !prev)}
-                >
-                  Popular
-                  <svg className="places__sorting-arrow" width="7" height="4">
-                    <use xlinkHref="#icon-arrow-select"></use>
-                  </svg>
-                </span>
-                <ul
-                  className={`places__options places__options--custom ${isSortOpen ? 'places__options--opened' : ''}`}
-                >
-                  <li className="places__option places__option--active" tabIndex={0}>Popular</li>
-                  <li className="places__option" tabIndex={0}>Price: low to high</li>
-                  <li className="places__option" tabIndex={0}>Price: high to low</li>
-                  <li className="places__option" tabIndex={0}>Top rated first</li>
-                </ul>
-              </form>
+              <b className="places__found">{filteredOffers.length} places to stay in {city}</b>
+
+              <SortingOptions
+                sortType={sortType}
+                onSortTypeChange={setSortType}
+              />
+
               <div className="cities__places-list places__list tabs__content">
 
                 <OffersList
-                  offers={filteredOffers}
+                  offers={sortedOffers}
                   activeOfferId={activeOfferId}
-                  onFavoriteClick={onFavoriteClick}
+                  onFavoriteClick={(id) => onFavoriteClick(id)}
                   onActiveOfferChange={setActiveOfferId}
                 />
 
@@ -129,7 +117,7 @@ const MainPage: React.FC<MainPageProps> = ({ offers }) => {
                 {cityData && (
                   <Map
                     city={cityData}
-                    offers={filteredOffers}
+                    offers={sortedOffers}
                     activeOfferId={activeOfferId}
                   />
                 )}

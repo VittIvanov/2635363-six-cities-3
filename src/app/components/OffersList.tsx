@@ -1,23 +1,12 @@
-import { OfferPreview } from '../../types/types';
 import OfferCard from './OfferCard';
-// import { useState } from 'react';
-
-type OffersListProps = {
-  offers: OfferPreview[];
-  activeOfferId: string | null;
-  onFavoriteClick: (id: string) => void;
-  onActiveOfferChange: (id: string | null) => void;
-};
+import { OffersListProps } from '../../types/types';
 
 const OffersList: React.FC<OffersListProps> = ({ offers, onFavoriteClick, onActiveOfferChange, activeOfferId }) => {
-  // const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
 
   const handleOfferMouseEnter = (id: string) => {
-    // setActiveOfferId(id);
     onActiveOfferChange?.(id);
   };
   const handleOfferMouseLeave = () => {
-    // setActiveOfferId(null);
     onActiveOfferChange?.(null);
   };
   return (

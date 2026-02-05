@@ -1,10 +1,5 @@
-
-import { Review } from '../../types/types';
+import { ReviewItemProps } from '../../types/types';
 import { getRatingWidth } from '../utils/rating';
-
-interface ReviewItemProps {
-  review: Review;
-}
 
 const ReviewItem: React.FC<ReviewItemProps> = ({ review }) => {
 
