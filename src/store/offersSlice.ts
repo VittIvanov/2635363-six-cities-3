@@ -11,7 +11,7 @@ export const fetchOffers = createAsyncThunk<
   return data;
 });
 
-const initialState: OffersState = {
+const offersInitialState: OffersState = {
   offers: [],
   isLoading: false,
   hasError: false,
@@ -19,7 +19,7 @@ const initialState: OffersState = {
 
 const offersSlice = createSlice({
   name: 'offers',
-  initialState,
+  initialState: offersInitialState,
   reducers: {
     toggleFavorite: (state, action: PayloadAction<string>) => {
       const favoriteOffer = state.offers.find((offer) => offer.id === action.payload);

@@ -1,14 +1,4 @@
 
-export interface MainPageProps {
-  offers: OfferPreview[];
-}
-
-export interface AppProps {
-  offers: OffersFull[];
-  onFavoriteClick: (id: string) => void;
-}
-
-
 export interface Location {
   latitude: number;
   longitude: number;
@@ -20,22 +10,14 @@ export interface City {
   location: Location;
 }
 
+export interface CityState {
+  city: string;
+}
+
 export interface CitiesListProps {
   cities: string[];
   activeCity: string;
   onCityClick: (city: string) => void;
-}
-
-export interface LoginPageProps {
-}
-
-export interface FavoritesPageProps {
-  offers: OfferPreview[];
-  onFavoriteClick: (id: string) => void;
-}
-
-export interface OfferPageProps {
-  offers: OffersFull[];
 }
 
 export type CardVariant = 'cities' | 'favorites' | 'nearPlaces';
@@ -114,15 +96,6 @@ export interface ReviewListProps {
   reviews: Review[];
 }
 
-export interface PrivateRouteProps {
-  children: JSX.Element;
-  isAuthenticated: boolean;
-}
-
-export type State = {
-  city: string;
-  offers: OfferPreview[];
-}
 
 export interface OffersState {
   offers: OffersFull[];
@@ -130,12 +103,26 @@ export interface OffersState {
   hasError: boolean;
 }
 
-export type ActionType = | { type: 'SET_CITY'; payload: string }
-  | { type: 'SET_OFFERS'; payload: OfferPreview[] };
-
 export type SortType = 'Popular' | 'PriceLowToHigh' | 'PriceHighToLow' | 'TopRated';
 
 export type SortingOptionsProps = {
   sortType: SortType;
   onSortTypeChange: (type: SortType) => void;
+}
+
+export type AuthorizationStatus = 'AUTH' | 'NO_AUTH';
+
+export interface AuthInfo {
+  name: string;
+  avatarUrl: string;
+  isPro: boolean;
+  email: string;
+  token: string;
+}
+
+export interface AuthState {
+  authorizationStatus: AuthorizationStatus;
+  user: AuthInfo | null;
+  isLoading: boolean;
+  hasError: boolean;
 }

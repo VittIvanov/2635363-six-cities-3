@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { reducer as cityReducer } from './reducer';
+import cityReducer from './citySlice';
 import offersReducer from './offersSlice';
+import authReducer from './authSlice';
 import { createAPI } from '../api/api';
 
 const api = createAPI();
@@ -8,6 +9,7 @@ const api = createAPI();
 const rootReducer = combineReducers({
   offers: offersReducer,
   city: cityReducer,
+  auth: authReducer,
 });
 
 export const store = configureStore({
@@ -15,9 +17,8 @@ export const store = configureStore({
 
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      thunk: {
-        extraArgument: api,
-      },
+      thunk: { extraArgument: api, },
+      serializableCheck: false,
     }),
 });
 
