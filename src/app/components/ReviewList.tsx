@@ -1,9 +1,8 @@
 import { ReviewListProps } from '../../types/types';
 import ReviewItem from './ReviewItem';
-import ReviewForm from './ReviewForm';
 
 const ReviewList: React.FC<ReviewListProps> = ({ reviews }) => (
-  <section className="offer__reviews reviews">
+  <>
     <h2 className="reviews__title">
       Reviews &middot;
       <span className="reviews__amount">{reviews.length}</span>
@@ -14,8 +13,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ reviews }) => (
       ))}
 
     </ul>
-    <ReviewForm />
-  </section>
+  </>
 );
 
 export default ReviewList;

@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { ReviewFormProps } from '../../types/types';
+import { useAppDispatch } from '../../store/store-hooks';
+import { fetchReviews, postReview } from '../../store/reviewsSlice';
+import { useAppSelector } from '../../store/store-hooks';
 
 const ratingTitles: Record<number, string> = {
   5: 'perfect',
@@ -7,25 +11,39 @@ const ratingTitles: Record<number, string> = {
   2: 'badly',
   1: 'terribly',
 };
-const ReviewForm: React.FC = () => {
+
+const ReviewForm: React.FC<ReviewFormProps> = ({ offerId }) => {
+  const dispatch = useAppDispatch();
+  const { isLoading, hasError } = useAppSelector((state) => state.reviews);
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState('');
 
   const isFormValid = rating !== null && comment.length >= 50;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
 
     if (!isFormValid) {
       return;
     }
-    // очистка формы
-    setRating(null);
-    setComment('');
-    // console.log(rating, comment);
+
+    try {
+      await dispatch(postReview({ offerId, comment, rating })).unwrap();
+
+      setRating(null);
+      setComment('');
+      dispatch(fetchReviews(offerId));
+    } catch (_error) {
+      // Ошибка обрабатывается через hasError в Redux
+    }
   };
+
   return (
-    <form className="reviews__form form" onSubmit={handleSubmit} method="post">
+    <form
+      className="reviews__form form"
+      onSubmit={(evt) => void handleSubmit(evt)}
+      method="post"
+    >
       <label className="reviews__label form__label" htmlFor="review">Your review</label>
 
       <div className="reviews__rating-form form__rating">
@@ -72,10 +90,16 @@ const ReviewForm: React.FC = () => {
         <button
           className="reviews__submit form__submit button"
           type="submit"
-          disabled={!isFormValid}
+          disabled={!isFormValid || isLoading}
         >
           Submit
         </button>
+
+        {hasError && (
+          <p style={{ color: 'red', marginTop: 5 }}>
+            Не удалось отправить отзыв. Попробуйте позже.
+          </p>
+        )}
       </div>
     </form>
   );

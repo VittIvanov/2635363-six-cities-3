@@ -18,7 +18,10 @@ const OffersList: React.FC<OffersListProps> = ({ offers, onFavoriteClick, onActi
           isActive={offer.id === activeOfferId}
           onOfferMouseEnter={handleOfferMouseEnter}
           onOfferMouseLeave={handleOfferMouseLeave}
-          onFavoriteClick={onFavoriteClick}
+          onFavoriteClick={() =>
+            onFavoriteClick({
+              id: offer.id, isFavorite: offer.isFavorite
+            })}
           variant="cities"
         />
       ))}

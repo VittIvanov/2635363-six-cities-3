@@ -4,7 +4,7 @@ import OfferCard from '../components/OfferCard';
 import FavoritesEmpty from './FavoritesEmpty';
 import { RootState } from '../../store/store-hooks';
 import { useAppDispatch, useAppSelector } from '../../store/store-hooks';
-import { toggleFavorite } from '../../store/offersSlice';
+import { toggleFavoriteServer } from '../../store/offersSlice';
 import Header from '../components/Header';
 import { Link } from 'react-router-dom';
 
@@ -28,8 +28,9 @@ const FavoritesPage: React.FC = () => {
       return acc;
     }, {});
 
-  const onFavoriteClick = (id: string) => {
-    dispatch(toggleFavorite(id));
+  const onFavoriteClick = (id: string, isFavorite: boolean) => {
+    const newStatus = isFavorite ? 0 : 1;
+    dispatch(toggleFavoriteServer({ offerId: id, status: newStatus }));
   };
 
   return (
@@ -56,7 +57,7 @@ const FavoritesPage: React.FC = () => {
                         key={offer.id}
                         offer={offer}
                         onOfferMouseEnter={() => { }} onOfferMouseLeave={() => { }}
-                        onFavoriteClick={onFavoriteClick}
+                        onFavoriteClick={() => onFavoriteClick(offer.id, offer.isFavorite)}
                         variant="favorites"
                       />
                     ))}

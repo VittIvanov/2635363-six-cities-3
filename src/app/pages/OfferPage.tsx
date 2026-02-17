@@ -1,35 +1,60 @@
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/store-hooks';
 import { getRatingWidth } from '../utils/rating';
-import { reviews } from '../../mocks/reviews';
 import ReviewList from '../components/ReviewList';
 import Map from '../components/Map';
 import OfferCard from '../components/OfferCard';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '../components/Header';
-import { toggleFavorite } from '../../store/offersSlice';
-import { OffersFull } from '../../types/types';
+import { fetchOfferById, fetchNearbyOffers, toggleFavoriteServer } from '../../store/offersSlice';
+import { fetchReviews } from '../../store/reviewsSlice';
+import ReviewForm from '../components/ReviewForm';
+import Spinner from '../components/spinner/Spinner';
 
 
 const OfferPage: React.FC = () => {
+  const { id } = useParams();
   const dispatch = useAppDispatch();
 
-  const offers = useAppSelector((state) => state.offers.offers);
-  const { id } = useParams();
+  // const offers = useAppSelector((state) => state.offers.offers);
+  const { currentOffer, nearbyOffers, isLoading, hasError } = useAppSelector((state) => state.offers);
+  // const nearbyOffers = useAppSelector((state) => state.offers.nearbyOffers);
+  const reviews = useAppSelector((state) => state.reviews.reviews);
+  const authorizationStatus = useAppSelector((state) => state.auth.authorizationStatus);
 
-  const currentOffer = offers.find((offer: OffersFull) => offer.id === id);
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchOfferById(id));
+      dispatch(fetchNearbyOffers(id));
+      dispatch(fetchReviews(id));
+    }
+  }, [id, dispatch]);
 
   if (!id) {
     return <p>Invalid offer id</p>;
   }
 
-  if (!currentOffer) {
-    return <p>Offer not found</p>;
+  if (isLoading) {
+    return <Spinner />;
   }
 
-  const nearbyOffers = offers.filter((offer) => offer.id !== currentOffer.id).slice(0, 3);
-  const onMapOffers = [currentOffer, ...nearbyOffers];
+  if (hasError) {
+    return <Navigate to="/404" replace />;
+  }
+
+  if (!currentOffer) {
+    return null;
+  }
+
+  const onFavoriteClick = () => {
+    const status = currentOffer.isFavorite ? 0 : 1;
+    dispatch(toggleFavoriteServer({ offerId: currentOffer.id, status }));
+  };
+
+  const nearbyThreeOffers = nearbyOffers.slice(0, 3);
+  const onMapOffers = [currentOffer, ...nearbyThreeOffers];
 
   return (
     <div className="page">
@@ -72,7 +97,7 @@ const OfferPage: React.FC = () => {
                       'offer__bookmark-button--active' : ''
                     }`
                   }
-                  onClick={() => dispatch(toggleFavorite(currentOffer.id))} type="button"
+                  onClick={onFavoriteClick} type="button"
                 >
                   <svg className="offer__bookmark-icon" width="31" height="33">
                     <use xlinkHref="#icon-bookmark"></use>
@@ -85,7 +110,7 @@ const OfferPage: React.FC = () => {
                   <span style={{ width: getRatingWidth(currentOffer.rating) }}></span>
                   <span className="visually-hidden">Rating</span>
                 </div>
-                <span className="offer__rating-value rating__value">${currentOffer.rating}</span>
+                <span className="offer__rating-value rating__value">{currentOffer.rating}</span>
               </div>
               <ul className="offer__features">
                 <li className="offer__feature offer__feature--entire">
@@ -145,7 +170,11 @@ const OfferPage: React.FC = () => {
                 </div>
               </div>
 
-              <ReviewList reviews={reviews} />
+              <section className="offer__reviews reviews">
+                <ReviewList reviews={reviews} />
+
+                {authorizationStatus === 'AUTH' && <ReviewForm offerId={currentOffer.id} />}
+              </section>
 
             </div>
           </div>
@@ -157,14 +186,19 @@ const OfferPage: React.FC = () => {
           <section className="near-places places">
             <h2 className="near-places__title">Other places in the neighbourhood</h2>
             <div className="near-places__list places__list">
-              {nearbyOffers.map((offer) => (
+              {nearbyThreeOffers.map((offer) => (
                 <OfferCard
                   key={offer.id}
                   offer={offer}
                   isActive={offer.id === activeOfferId}
                   onOfferMouseEnter={() => setActiveOfferId(offer.id)}
                   onOfferMouseLeave={() => setActiveOfferId(null)}
-                  onFavoriteClick={() => dispatch(toggleFavorite(offer.id))}
+                  onFavoriteClick={() => {
+                    dispatch(toggleFavoriteServer({
+                      offerId: offer.id,
+                      status: offer.isFavorite ? 0 : 1,
+                    }));
+                  }}
                   variant="nearPlaces"
                 />
               ))}
