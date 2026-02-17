@@ -11,7 +11,8 @@ const Header: React.FC = () => {
   const offers = useAppSelector((state: RootState) => state.offers.offers);
   const favoritesCount = offers.filter((offer) => offer.isFavorite).length;
 
-  const handleLogout = () => {
+  const handleLogout = (evt: React.MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
     dispatch(logoutAsync());
   };
 
@@ -20,7 +21,7 @@ const Header: React.FC = () => {
       <div className="container">
         <div className="header__wrapper">
           <div className="header__left">
-            <Link className="header__logo-link header__logo-link--active" to="*">
+            <Link className="header__logo-link header__logo-link--active" to="/">
               <img className="header__logo" src="img/logo.svg" alt="6 cities logo" width="81" height="41" />
             </Link>
           </div>
@@ -31,13 +32,13 @@ const Header: React.FC = () => {
                   {/* авторизованый пользователь */}
                   <li className="header__nav-item user">
                     <Link className="header__nav-link header__nav-link--profile" to="/favorites">
-                      <div
-                        className="header__avatar-wrapper user__avatar-wrapper"
-                        style={{
-                          backgroundImage: `url(${user.avatarUrl})`,
-                          borderRadius: '50%',
-                        }}
-                      >
+                      <div className="header__avatar-wrapper user__avatar-wrapper">
+                        <img
+                          src={user.avatarUrl} width="20" height="20" alt="User avatar"
+                          style={{
+                            borderRadius: '50%'
+                          }}
+                        />
                       </div>
                       <span className="header__user-name user__name">{user.email}</span>
                       <span className="header__favorite-count">{favoritesCount}</span>

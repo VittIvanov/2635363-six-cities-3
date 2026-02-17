@@ -75,6 +75,16 @@ export interface Review {
   rating: number;
 }
 
+export interface ReviewFormProps {
+  offerId: string;
+}
+
+export type ReviewsState = {
+  reviews: Review[];
+  isLoading: boolean;
+  hasError: boolean;
+};
+
 export type MapProps = {
   city: City;
   offers: OfferPreview[];
@@ -84,7 +94,7 @@ export type MapProps = {
 export type OffersListProps = {
   offers: OfferPreview[];
   activeOfferId: string | null;
-  onFavoriteClick: (id: string) => void;
+  onFavoriteClick: (data: FavoriteToggleData) => void;
   onActiveOfferChange: (id: string | null) => void;
 };
 
@@ -96,11 +106,12 @@ export interface ReviewListProps {
   reviews: Review[];
 }
 
-
 export interface OffersState {
   offers: OffersFull[];
   isLoading: boolean;
   hasError: boolean;
+  currentOffer: OffersFull | null;
+  nearbyOffers: OffersFull[];
 }
 
 export type SortType = 'Popular' | 'PriceLowToHigh' | 'PriceHighToLow' | 'TopRated';
@@ -126,3 +137,9 @@ export interface AuthState {
   isLoading: boolean;
   hasError: boolean;
 }
+
+export type FavoriteToggleData = {
+  id: string;
+  isFavorite: boolean;
+};
+

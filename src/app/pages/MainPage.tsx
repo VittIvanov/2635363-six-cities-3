@@ -3,20 +3,23 @@ import OffersList from '../components/OffersList';
 import { useEffect, useState } from 'react';
 import Map from '../components/Map';
 import { useAppDispatch, useAppSelector } from '../../store/store-hooks';
-import { changeCity } from '../../store/actions';
+import { changeCity } from '../../store/citySlice';
 import CitiesList from '../components/CitiesList';
-import { toggleFavorite } from '../../store/offersSlice';
+import CitiesEmpty from '../components/CitiesEmpty';
+import { toggleFavoriteServer } from '../../store/offersSlice';
 import SortingOptions from '../components/SortingOptions';
-import { SortType } from '../../types/types';
 import Header from '../components/Header';
 import { fetchOffers } from '../../store/offersSlice';
 import Spinner from '../components/spinner/Spinner';
+import { CITIES } from '../../const/const';
+import { SortType, FavoriteToggleData } from '../../types/types';
 
 
 const MainPage: React.FC = () => {
-  const city = useAppSelector((state) => state.city.city);
-  const offers = useAppSelector((state) => state.offers.offers);
   const dispatch = useAppDispatch();
+  const offers = useAppSelector((state) => state.offers.offers);
+  const city = useAppSelector((state) => state.city.city);
+
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
   const [sortType, setSortType] = useState<SortType>('Popular');
 
@@ -27,6 +30,9 @@ const MainPage: React.FC = () => {
   const filteredOffers = offers.filter(
     (offer) => offer.city?.name === city
   );
+  const isEmpty = filteredOffers.length === 0;
+  const cityData = filteredOffers[0]?.city;
+
   const sortedOffers = [...filteredOffers].sort((a, b) => {
     switch (sortType) {
       case 'PriceLowToHigh':
@@ -44,11 +50,9 @@ const MainPage: React.FC = () => {
     dispatch(changeCity(cityName));
   };
 
-  const cityData = filteredOffers[0]?.city;
-  const cities = [...new Set(filteredOffers.map((offer) => offer.city?.name))];
-
-  const onFavoriteClick = (id: string) => {
-    dispatch(toggleFavorite(id));
+  const onFavoriteClick = ({ id, isFavorite }: FavoriteToggleData) => {
+    const newStatus = isFavorite ? 0 : 1;
+    dispatch(toggleFavoriteServer({ offerId: id, status: newStatus }));
   };
 
   const isLoading = useAppSelector((state) => state.offers.isLoading);
@@ -57,7 +61,6 @@ const MainPage: React.FC = () => {
   if (isLoading) {
     return <Spinner />;
   }
-
   if (hasError) {
     return <p>Сервер временно недоступен 😿</p>;
   }
@@ -67,51 +70,54 @@ const MainPage: React.FC = () => {
 
       <Header />
 
-
-      <main className="page__main page__main--index">
+      <main className={`page__main page__main--index ${isEmpty ? 'page__main--index-empty' : ''}`}>
         <h1 className="visually-hidden">Cities</h1>
         <div className="tabs">
           <section className="locations container">
 
-            <CitiesList cities={cities} activeCity={city} onCityClick={onCityClick} />
+            <CitiesList cities={CITIES} activeCity={city} onCityClick={onCityClick} />
 
           </section>
         </div>
         <div className="cities">
-          <div className="cities__places-container container">
-            <section className="cities__places places">
-              <h2 className="visually-hidden">Places</h2>
-              <b className="places__found">{filteredOffers.length} places to stay in {city}</b>
+          {isEmpty ? (
+            <CitiesEmpty city={city} />
+          ) : (
+            <div className="cities__places-container container">
+              <section className="cities__places places">
+                <h2 className="visually-hidden">Places</h2>
+                <b className="places__found">{filteredOffers.length} places to stay in {city}</b>
 
-              <SortingOptions
-                sortType={sortType}
-                onSortTypeChange={setSortType}
-              />
-
-              <div className="cities__places-list places__list tabs__content">
-
-                <OffersList
-                  offers={sortedOffers}
-                  activeOfferId={activeOfferId}
-                  onFavoriteClick={(id) => onFavoriteClick(id)}
-                  onActiveOfferChange={setActiveOfferId}
+                <SortingOptions
+                  sortType={sortType}
+                  onSortTypeChange={setSortType}
                 />
 
-              </div>
-            </section>
-            <div className="cities__right-section">
-              <section className="cities__map map" >
-                {cityData && (
-                  <Map
-                    city={cityData}
+                <div className="cities__places-list places__list tabs__content">
+
+                  <OffersList
                     offers={sortedOffers}
                     activeOfferId={activeOfferId}
+                    onFavoriteClick={onFavoriteClick}
+                    onActiveOfferChange={setActiveOfferId}
                   />
-                )}
+
+                </div>
               </section>
+              <div className="cities__right-section">
+                <section className="cities__map map" >
+                  {cityData && (
+                    <Map
+                      city={cityData}
+                      offers={sortedOffers}
+                      activeOfferId={activeOfferId}
+                    />
+                  )}
+                </section>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
+        </div >
       </main >
     </div >
   );

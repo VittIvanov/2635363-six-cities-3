@@ -1,6 +1,5 @@
 
 import { useAppDispatch, useAppSelector } from '../../store/store-hooks';
-import Header from '../components/Header';
 import { FormEvent, useState } from 'react';
 import { login } from '../../store/authSlice';
 import { Link, Navigate } from 'react-router-dom';
@@ -25,7 +24,23 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="page page--gray page--login">
-      <Header />
+      <header className="header">
+        <div className="container">
+          <div className="header__wrapper">
+            <div className="header__left">
+              <Link className="header__logo-link" to="/">
+                <img
+                  className="header__logo"
+                  src="img/logo.svg"
+                  alt="6 cities logo"
+                  width="81"
+                  height="41"
+                />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
 
       <main className="page__main page__main--login">
         <div className="page__login-container container">
@@ -54,7 +69,11 @@ const LoginPage: React.FC = () => {
                 />
               </div>
               <button disabled={isLoading} className="login__submit form__submit button" type="submit">Sign in</button>
-              {hasError && <p >Ошибка авторизации:{hasError}</p>}
+              {hasError && (
+                <p style={{ color: 'red', marginTop: 8 }}>
+                  Ошибка авторизации: {hasError}
+                </p>
+              )}
             </form>
           </section>
           <section className="locations locations--login locations--current">

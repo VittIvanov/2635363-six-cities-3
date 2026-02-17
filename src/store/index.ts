@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import cityReducer from './citySlice';
 import offersReducer from './offersSlice';
 import authReducer from './authSlice';
+import reviewReducer from './reviewsSlice';
 import { createAPI } from '../api/api';
 
 const api = createAPI();
@@ -10,6 +11,7 @@ const rootReducer = combineReducers({
   offers: offersReducer,
   city: cityReducer,
   auth: authReducer,
+  reviews: reviewReducer,
 });
 
 export const store = configureStore({
