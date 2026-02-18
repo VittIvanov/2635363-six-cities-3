@@ -1,4 +1,4 @@
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/store-hooks';
 import { getRatingWidth } from '../utils/rating';
 import ReviewList from '../components/ReviewList';
@@ -16,13 +16,13 @@ const OfferPage: React.FC = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
 
-  // const offers = useAppSelector((state) => state.offers.offers);
   const { currentOffer, nearbyOffers, isLoading, hasError } = useAppSelector((state) => state.offers);
-  // const nearbyOffers = useAppSelector((state) => state.offers.nearbyOffers);
   const reviews = useAppSelector((state) => state.reviews.reviews);
   const authorizationStatus = useAppSelector((state) => state.auth.authorizationStatus);
 
   const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (id) {
@@ -51,6 +51,14 @@ const OfferPage: React.FC = () => {
   const onFavoriteClick = () => {
     const status = currentOffer.isFavorite ? 0 : 1;
     dispatch(toggleFavoriteServer({ offerId: currentOffer.id, status }));
+  };
+
+  const handleBookmarkClick = () => {
+    if (authorizationStatus !== 'AUTH') {
+      navigate('/login');
+      return;
+    }
+    onFavoriteClick();
   };
 
   const nearbyThreeOffers = nearbyOffers.slice(0, 3);
@@ -97,7 +105,8 @@ const OfferPage: React.FC = () => {
                       'offer__bookmark-button--active' : ''
                     }`
                   }
-                  onClick={onFavoriteClick} type="button"
+                  onClick={handleBookmarkClick}
+                  type="button"
                 >
                   <svg className="offer__bookmark-icon" width="31" height="33">
                     <use xlinkHref="#icon-bookmark"></use>
@@ -179,7 +188,12 @@ const OfferPage: React.FC = () => {
             </div>
           </div>
           <section className="offer__map map">
-            <Map city={currentOffer.city} offers={onMapOffers} activeOfferId={activeOfferId} />
+            <Map
+              city={currentOffer.city}
+              offers={onMapOffers}
+              activeOfferId={activeOfferId}
+              selectedOfferId={currentOffer.id}
+            />
           </section>
         </section>
         <div className="container">

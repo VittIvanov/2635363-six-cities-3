@@ -71,7 +71,7 @@ const LoginPage: React.FC = () => {
               <button disabled={isLoading} className="login__submit form__submit button" type="submit">Sign in</button>
               {hasError && (
                 <p style={{ color: 'red', marginTop: 8 }}>
-                  Ошибка авторизации: {hasError}
+                  Неверный email или пароль
                 </p>
               )}
             </form>

@@ -14,7 +14,7 @@ const activeIcon = leaflet.icon({
   iconAnchor: [20, 40],
 });
 
-const Map: React.FC<MapProps> = ({ city, offers, activeOfferId }) => {
+const Map: React.FC<MapProps> = ({ city, offers, activeOfferId, selectedOfferId }) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<leaflet.Map | null>(null);
   const markersLayerRef = useRef<leaflet.LayerGroup | null>(null);
@@ -64,15 +64,23 @@ const Map: React.FC<MapProps> = ({ city, offers, activeOfferId }) => {
     const layer = leaflet.layerGroup().addTo(map);
 
     offers.forEach((offer) => {
+      const isCurrentOffer = offer.id === selectedOfferId;
+      const isActiveOffer = offer.id === activeOfferId;
+
+      let icon = defaultIcon;
+      if (isCurrentOffer) {
+        icon = activeIcon;
+      } else if (isActiveOffer) {
+        icon = activeIcon;
+      }
+
       leaflet
-        .marker([offer.location.latitude, offer.location.longitude], {
-          icon: offer.id === activeOfferId ? activeIcon : defaultIcon,
-        })
+        .marker([offer.location.latitude, offer.location.longitude], { icon })
         .addTo(layer);
     });
 
     markersLayerRef.current = layer;
-  }, [offers, activeOfferId]);
+  }, [offers, activeOfferId, selectedOfferId]);
 
   return (
     <div

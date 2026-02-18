@@ -95,11 +95,13 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.authorizationStatus = 'AUTH';
         state.user = action.payload;
+        state.hasError = false;
         localStorage.setItem('six-cities-token', action.payload.token);
       })
       .addCase(login.rejected, (state) => {
         state.isLoading = false;
         state.authorizationStatus = 'NO_AUTH';
+        state.hasError = true;
       });
   },
 });
