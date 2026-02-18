@@ -89,6 +89,7 @@ export type MapProps = {
   city: City;
   offers: OfferPreview[];
   activeOfferId?: string | null;
+  selectedOfferId?: string;
 };
 
 export type OffersListProps = {
