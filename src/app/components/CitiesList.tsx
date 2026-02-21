@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { CitiesListProps } from '../../types/types';
+import { memo } from 'react';
 
-const CitiesList: React.FC<CitiesListProps> = ({ cities, activeCity, onCityClick }) => (
+const CitiesList: React.FC<CitiesListProps> = memo(({ cities, activeCity, onCityClick }) => (
   <ul className="locations__list tabs__list">
     {cities.map((city) => (
       <li className="locations__item" key={city}>
@@ -18,6 +19,8 @@ const CitiesList: React.FC<CitiesListProps> = ({ cities, activeCity, onCityClick
       </li>
     ))}
   </ul>
-);
+));
+
+CitiesList.displayName = 'CitiesList';
 
 export default CitiesList;

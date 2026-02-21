@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../store/store-hooks';
 import { logoutAsync } from '../../store/authSlice';
 import { RootState } from '../../store/store-hooks';
+import { useCallback } from 'react';
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -11,10 +12,10 @@ const Header: React.FC = () => {
   const offers = useAppSelector((state: RootState) => state.offers.offers);
   const favoritesCount = offers.filter((offer) => offer.isFavorite).length;
 
-  const handleLogout = (evt: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleLogout = useCallback((evt: React.MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     dispatch(logoutAsync());
-  };
+  }, [dispatch]);
 
   return (
     <header className="header">
