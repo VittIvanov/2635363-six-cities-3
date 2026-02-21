@@ -22,7 +22,6 @@ const App: React.FC = () => {
         <Route path="/" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Приватный маршрут */}
         <Route path="/favorites" element={
           <PrivateRoute >
             <FavoritesPage />
