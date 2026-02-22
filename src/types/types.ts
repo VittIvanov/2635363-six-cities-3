@@ -27,7 +27,7 @@ export interface OfferCardProps {
   isActive: boolean;
   onOfferMouseEnter: (id: string) => void;
   onOfferMouseLeave: () => void;
-  onFavoriteClick: (id: string) => void;
+  onFavoriteClick: (data: FavoriteToggleData) => void;
   variant: CardVariant;
   className?: string;
 }
@@ -96,7 +96,7 @@ export type OffersListProps = {
   offers: OfferPreview[];
   activeOfferId: string | null;
   onFavoriteClick: (data: FavoriteToggleData) => void;
-  onActiveOfferChange: (id: string | null) => void;
+  onActiveOfferChange: (id: string) => void;
 };
 
 export interface ReviewItemProps {

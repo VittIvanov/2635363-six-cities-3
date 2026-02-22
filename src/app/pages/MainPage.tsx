@@ -1,6 +1,6 @@
 
 import OffersList from '../components/OffersList';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Map from '../components/Map';
 import { useAppDispatch, useAppSelector } from '../../store/store-hooks';
 import { changeCity } from '../../store/citySlice';
@@ -13,46 +13,65 @@ import { fetchOffers } from '../../store/offersSlice';
 import Spinner from '../components/spinner/Spinner';
 import { CITIES } from '../../const/const';
 import { SortType, FavoriteToggleData } from '../../types/types';
+import { useNavigate } from 'react-router-dom';
 
 
 const MainPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const offers = useAppSelector((state) => state.offers.offers);
   const city = useAppSelector((state) => state.city.city);
+  const authorizationStatus = useAppSelector((state) => state.auth.authorizationStatus);
 
-  const [activeOfferId, setActiveOfferId] = useState<string | null>(null);
+  const [activeOfferId, setActiveOfferId] = useState<string>('');
   const [sortType, setSortType] = useState<SortType>('Popular');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchOffers());
   }, [dispatch]);
 
-  const filteredOffers = offers.filter(
+  const filteredOffers = useMemo(() => offers.filter(
     (offer) => offer.city?.name === city
-  );
+  ), [offers, city]);
+
   const isEmpty = filteredOffers.length === 0;
   const cityData = filteredOffers[0]?.city;
 
-  const sortedOffers = [...filteredOffers].sort((a, b) => {
-    switch (sortType) {
-      case 'PriceLowToHigh':
-        return a.price - b.price;
-      case 'PriceHighToLow':
-        return b.price - a.price;
-      case 'TopRated':
-        return b.rating - a.rating;
-      default:
-        return 0;
-    }
-  });
+  const sortedOffers = useMemo(() => {
+    const sorted = [...filteredOffers];
 
-  const onCityClick = (cityName: string) => {
+    sorted.sort((a, b) => {
+      switch (sortType) {
+        case 'PriceLowToHigh':
+          return a.price - b.price;
+        case 'PriceHighToLow':
+          return b.price - a.price;
+        case 'TopRated':
+          return b.rating - a.rating;
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [filteredOffers, sortType]);
+
+  const onCityClick = useCallback((cityName: string) => {
     dispatch(changeCity(cityName));
-  };
+  }, [dispatch]);
 
-  const onFavoriteClick = ({ id, isFavorite }: FavoriteToggleData) => {
+  const onFavoriteClick = useCallback(({ id, isFavorite }: FavoriteToggleData) => {
     const newStatus = isFavorite ? 0 : 1;
     dispatch(toggleFavoriteServer({ offerId: id, status: newStatus }));
+  }, [dispatch]);
+
+  const handleBookmarkClick = () => {
+    if (authorizationStatus !== 'AUTH') {
+      navigate('/login');
+      return;
+    }
+    onFavoriteClick({ id: activeOfferId, isFavorite: false });
   };
 
   const isLoading = useAppSelector((state) => state.offers.isLoading);
@@ -98,7 +117,7 @@ const MainPage: React.FC = () => {
                   <OffersList
                     offers={sortedOffers}
                     activeOfferId={activeOfferId}
-                    onFavoriteClick={onFavoriteClick}
+                    onFavoriteClick={handleBookmarkClick}
                     onActiveOfferChange={setActiveOfferId}
                   />
 

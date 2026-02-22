@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { SortingOptionsProps, SortType } from '../../types/types';
 
 
-const SortingOptions: React.FC<SortingOptionsProps> = ({
+const SortingOptions: React.FC<SortingOptionsProps> = memo(({
   sortType,
   onSortTypeChange,
 }) => {
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const handleSortTypeChange = (type: SortType) => {
+
+  const handleSortTypeChange = useCallback((type: SortType) => {
     onSortTypeChange(type);
     setIsSortOpen(false);
-  };
+  }, [onSortTypeChange]);
 
   return (
     <form className="places__sorting" action="#" method="get">
@@ -55,6 +56,8 @@ const SortingOptions: React.FC<SortingOptionsProps> = ({
       </ul>
     </form>
   );
-};
+});
+
+SortingOptions.displayName = 'SortingOptions';
 
 export default SortingOptions;

@@ -1,14 +1,17 @@
 import OfferCard from './OfferCard';
 import { OffersListProps } from '../../types/types';
+import { useCallback, memo } from 'react';
 
-const OffersList: React.FC<OffersListProps> = ({ offers, onFavoriteClick, onActiveOfferChange, activeOfferId }) => {
+const OffersList: React.FC<OffersListProps> = memo(({ offers, onFavoriteClick, onActiveOfferChange, activeOfferId }) => {
 
-  const handleOfferMouseEnter = (id: string) => {
+  const handleOfferMouseEnter = useCallback((id: string) => {
     onActiveOfferChange?.(id);
-  };
-  const handleOfferMouseLeave = () => {
-    onActiveOfferChange?.(null);
-  };
+  }, [onActiveOfferChange]);
+
+  const handleOfferMouseLeave = useCallback(() => {
+    onActiveOfferChange?.('');
+  }, [onActiveOfferChange]);
+
   return (
     <>
       {offers.map((offer) => (
@@ -18,15 +21,14 @@ const OffersList: React.FC<OffersListProps> = ({ offers, onFavoriteClick, onActi
           isActive={offer.id === activeOfferId}
           onOfferMouseEnter={handleOfferMouseEnter}
           onOfferMouseLeave={handleOfferMouseLeave}
-          onFavoriteClick={() =>
-            onFavoriteClick({
-              id: offer.id, isFavorite: offer.isFavorite
-            })}
+          onFavoriteClick={onFavoriteClick}
           variant="cities"
         />
       ))}
     </>
   );
-};
+});
+
+OffersList.displayName = 'OffersList';
 
 export default OffersList;

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { getRatingWidth } from '../utils/rating';
 import { CardVariant, OfferCardProps } from '../../types/types';
+import { memo } from 'react';
 
 const IMAGE_SIZES: Record<CardVariant, { width: number; height: number }> = {
   cities: { width: 260, height: 200 },
@@ -24,7 +25,7 @@ type Props = OfferCardProps & {
   variant: CardVariant;
 };
 
-const OfferCard: React.FC<Props> = ({
+const OfferCard: React.FC<Props> = memo(({
   offer,
   onOfferMouseEnter,
   onOfferMouseLeave,
@@ -66,7 +67,7 @@ const OfferCard: React.FC<Props> = ({
           <button
             className={`place-card__bookmark-button button ${isFavorite ? 'place-card__bookmark-button--active' : ''}`}
             type="button"
-            onClick={() => onFavoriteClick(id)}
+            onClick={() => onFavoriteClick({ id, isFavorite })}
           >
             <svg className="place-card__bookmark-icon" width="18" height="19">
               <use xlinkHref="#icon-bookmark"></use>
@@ -89,6 +90,8 @@ const OfferCard: React.FC<Props> = ({
       </div>
     </article >
   );
-};
+});
+
+OfferCard.displayName = 'OfferCard';
 
 export default OfferCard;
